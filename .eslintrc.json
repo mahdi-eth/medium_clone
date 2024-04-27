@@ -1,0 +1,26 @@
+{
+  "env": {
+      "browser": true,
+      "es2021": true
+  },
+  "extends": ["standard-with-typescript", "eslint:recommended", "prettier"],
+  "parserOptions": {
+      "project": "./tsconfig.json",
+      "ecmaVersion": "latest",
+      "sourceType": "module"
+  },
+  "rules": {
+      "no-console": "warn",
+      "@typescript-eslint/no-floating-promises": "off",
+      "no-async-promise-executor": "off",
+      "no-unused-expressions": "off",
+      "@typescript-eslint/no-unused-expressions": "off",
+      "@typescript-eslint/strict-boolean-expressions": "off",
+      "@typescript-eslint/no-misused-promises": [
+          "off",
+          {
+              "checksVoidReturn": false
+          }
+      ]
+  }
+}

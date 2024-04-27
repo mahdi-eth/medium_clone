@@ -1,0 +1,5 @@
+dist/**/*.js"
+dist/*"
+commitlint.config.js
+jest.config.ts
+**/*.spec.ts
