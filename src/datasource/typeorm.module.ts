@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { Global, Module } from '@nestjs/common';
 import { TagEntity } from '@/tag/tag.entity';
-import { UserEntity } from '@/users/users.entity';
+import { UserEntity } from '@/user/user.entity';
 
 @Global()
 @Module({
@@ -12,7 +12,7 @@ import { UserEntity } from '@/users/users.entity';
       inject: [],
       useFactory: async () => {
         try {
-          const dataSource = new DataSource({
+          const appDataSource = new DataSource({
             type: 'postgres',
             host: process.env.POSTGRES_HOST,
             port: Number(process.env.POSTGRES_PORT) ?? 5432,
@@ -22,9 +22,9 @@ import { UserEntity } from '@/users/users.entity';
             entities: [TagEntity, UserEntity],
             synchronize: true,
           });
-          await dataSource.initialize();
+          await appDataSource.initialize();
           console.log('Database connected successfully');
-          return dataSource;
+          return appDataSource;
         } catch (error) {
           console.log('Error connecting to database');
           throw error;

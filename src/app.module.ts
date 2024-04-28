@@ -4,10 +4,10 @@ import { AppService } from '@/app.service';
 import { TagModule } from '@/tag/tag.module';
 import { TypeOrmModule } from '@/datasource/typeorm.module';
 import { ConfigModule } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
+import { UserModule } from '@/user/user.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), TypeOrmModule, TagModule, UsersModule],
+  imports: [ConfigModule.forRoot(), TypeOrmModule, TagModule, UserModule],
   controllers: [AppController],
   providers: [AppService],
 })
