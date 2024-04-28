@@ -43,6 +43,7 @@ export class UserService {
       where: {
         email: loginUserDto.email,
       },
+      select: ['id', 'username', 'email', 'bio', 'image', 'password'],
     });
 
     if (!user) {
@@ -54,6 +55,9 @@ export class UserService {
     if (!isPasswordValid) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
+
+    delete user.password;
+
     return user;
   }
 
