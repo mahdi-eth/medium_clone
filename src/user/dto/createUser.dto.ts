@@ -11,3 +11,12 @@ export class CreateUserDto {
   @IsNotEmpty()
   readonly password: string;
 }
+
+export class LoginUserDto {
+  @IsNotEmpty()
+  @IsEmail()
+  readonly email: string;
+
+  @IsNotEmpty()
+  readonly password: string;
+}

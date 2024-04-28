@@ -1,9 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto } from '@/user/dto/createUser.dto';
+import { CreateUserDto, LoginUserDto } from '@/user/dto/createUser.dto';
 import { UserEntity } from '@/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { sign } from 'jsonwebtoken';
+import { compare } from 'bcrypt';
 import { UserResponseInterface } from './types/userResponse.interface';
 
 @Injectable()
@@ -35,6 +36,25 @@ export class UserService {
     Object.assign(newUser, createUserDto);
     await this.userRepository.save(newUser);
     return newUser;
+  }
+
+  async loginUser(loginUserDto: LoginUserDto): Promise<UserEntity> {
+    const user = await this.userRepository.findOne({
+      where: {
+        email: loginUserDto.email,
+      },
+    });
+
+    if (!user) {
+      throw new HttpException('Email does not exist', HttpStatus.NOT_FOUND);
+    }
+
+    const isPasswordValid = await compare(loginUserDto.password, user.password);
+
+    if (!isPasswordValid) {
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+    }
+    return user;
   }
 
   generateJwt(user: UserEntity): string {
