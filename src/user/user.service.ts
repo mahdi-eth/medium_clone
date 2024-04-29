@@ -1,5 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateUserDto, LoginUserDto } from '@/user/dto/createUser.dto';
+import {
+  CreateUserDto,
+  LoginUserDto,
+  UpdateUserDto,
+} from '@/user/dto/user.dto';
 import { UserEntity } from '@/user/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -59,6 +63,31 @@ export class UserService {
     delete user.password;
 
     return user;
+  }
+
+  async updateUser(
+    user: UserEntity,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserEntity> {
+    if (updateUserDto?.email) {
+      user.email = updateUserDto.email;
+    }
+    if (updateUserDto?.username) {
+      user.username = updateUserDto.username;
+    }
+    if (updateUserDto?.bio) {
+      user.bio = updateUserDto.bio;
+    }
+    if (updateUserDto?.image) {
+      user.image = updateUserDto.image;
+    }
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  async findById(id: number): Promise<UserEntity> {
+    return this.userRepository.findOne({ where: { id } });
   }
 
   generateJwt(user: UserEntity): string {
