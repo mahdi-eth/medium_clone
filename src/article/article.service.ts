@@ -1,5 +1,5 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository, getRepository } from 'typeorm';
+import { DataSource, Like, Repository } from 'typeorm';
 import { ArticleEntity } from './article.entity';
 import { CreateArticleDto, UpdateArticleDto } from './dto/article.dto';
 import {
@@ -18,6 +18,8 @@ export class ArticleService {
   constructor(
     @InjectRepository(ArticleEntity)
     private readonly articleRepository: Repository<ArticleEntity>,
+    @InjectRepository(UserEntity)
+    private readonly userRepository: Repository<UserEntity>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -54,8 +56,25 @@ export class ArticleService {
       queryBuilder.offset(query.offset);
     }
 
-    const articles = await queryBuilder.getMany();
+    if (query.tag) {
+      queryBuilder.andWhere('articles.tagList LIKE :tag', {
+        tag: `%${query.tag}%`,
+      });
+    }
 
+    if (query.author) {
+      const author = await this.userRepository.findOne({
+        where: {
+          username: Like(`%${query.author}%`),
+        },
+      });
+
+      queryBuilder.andWhere('articles.authorId = :id', {
+        id: author.id,
+      });
+    }
+
+    const articles = await queryBuilder.getMany();
     return { articles, articlesCount };
   }
 
