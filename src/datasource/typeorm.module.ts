@@ -2,6 +2,7 @@ import { DataSource } from 'typeorm';
 import { Global, Module } from '@nestjs/common';
 import { TagEntity } from '@/tag/tag.entity';
 import { UserEntity } from '@/user/user.entity';
+import { ArticleEntity } from '@/article/article.entity';
 
 @Global()
 @Module({
@@ -19,7 +20,7 @@ import { UserEntity } from '@/user/user.entity';
             username: process.env.POSTGRES_USER,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
-            entities: [TagEntity, UserEntity],
+            entities: [TagEntity, UserEntity, ArticleEntity],
             synchronize: true,
           });
           await appDataSource.initialize();
