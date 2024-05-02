@@ -35,7 +35,7 @@ export class ArticleService {
     );
   }
 
-  async findAll(query: any): Promise<ArticlesResponseInterface> {
+  async findAll(query: any, id: number): Promise<ArticlesResponseInterface> {
     const queryBuilder = this.dataSource
       .getRepository(ArticleEntity)
       .createQueryBuilder('articles')
@@ -57,6 +57,16 @@ export class ArticleService {
       queryBuilder.andWhere('articles.tagList LIKE :tag', {
         tag: `%${query.tag}%`,
       });
+    }
+
+    if (query.favorited) {
+      const user = await this.userRepository.findOne({
+        where: { username: query.favorited },
+        relations: ['favorites'],
+      });
+      const ids = user.favorites.map((el) => el.id);
+
+      queryBuilder.andWhere('articles.id IN (:...ids)', { ids });
     }
 
     if (query.author) {
