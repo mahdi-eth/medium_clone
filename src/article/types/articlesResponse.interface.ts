@@ -1,6 +1,10 @@
-import { ArticleEntity } from '../article.entity';
+import { articleType } from './article.type';
+
+interface SingleEntityInFeedInterface extends articleType {
+  favorited: boolean
+}
 
 export interface ArticlesResponseInterface {
-  articles: ArticleEntity[];
+  articles: SingleEntityInFeedInterface[];
   articlesCount: number;
 }
