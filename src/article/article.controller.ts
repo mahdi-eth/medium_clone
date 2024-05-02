@@ -25,8 +25,8 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
-  async findAll(@User('id') currentUserId: number, @Query() query: any): Promise<ArticlesResponseInterface> {
-    return await this.articleService.findAll(currentUserId, query)
+  async findAll(@Query() query: any): Promise<ArticlesResponseInterface> {
+    return await this.articleService.findAll(query)
   }
 
   @Post()
@@ -77,5 +77,19 @@ export class ArticleController {
   ): Promise<DeleteResult> {
     await this.articleService.deleteArticle(currentUserId, slug);
     return;
+  }
+
+  @Post(':slug/favorite')
+  @UseGuards(AuthGuard)
+  async addArticleToFavorites(@User('id') currentUserId: number, @Param('slug') slug: string) : Promise<ArticleResponseInterface> {
+    const article = await this.articleService.addArticleToFavorites(slug, currentUserId)
+    return this.articleService.buildArticleResponse(article)
+  }
+
+  @Delete(':slug/favorite')
+  @UseGuards(AuthGuard)
+  async removeArticleFromFavorites(@User('id') currentUserId: number, @Param('slug') slug: string) : Promise<ArticleResponseInterface> {
+    const article = await this.articleService.removeArticleFromFavorites(slug, currentUserId)
+    return this.articleService.buildArticleResponse(article)
   }
 }

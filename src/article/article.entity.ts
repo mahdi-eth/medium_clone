@@ -3,7 +3,6 @@ import {
   BeforeUpdate,
   Column,
   Entity,
-  JoinTable,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -22,26 +21,17 @@ export class ArticleEntity {
   @Column({ default: '' })
   description: string;
 
-  //   @Column({ default: '' })
-  //   body: string;
-
   @Column('simple-array')
   tagList: string[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+  createdAt: Date; 
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   updatedAt: Date;
 
-  //   @Column({ default: false })
-  //   favorited: boolean;
-
   @Column({ default: 0 })
   favoritesCount: number;
-
-  //   @ManyToOne({ default: '' })
-  //   body: string;
 
   @BeforeUpdate()
   updateTimeStamp() {
@@ -51,6 +41,5 @@ export class ArticleEntity {
   @ManyToOne(() => UserEntity, (user) => user.articles, {
     eager: true,
   })
-  @JoinTable()
   author: UserEntity;
 }
