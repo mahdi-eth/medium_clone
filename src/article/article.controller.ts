@@ -25,8 +25,20 @@ export class ArticleController {
   constructor(private readonly articleService: ArticleService) {}
 
   @Get()
-  async findAll(@Query() query: any, @User('id') userId: number): Promise<ArticlesResponseInterface> {
-    return await this.articleService.findAll(query, userId)
+  async findAll(
+    @Query() query: any,
+    @User('id') userId: number,
+  ): Promise<ArticlesResponseInterface> {
+    return await this.articleService.findAll(query, userId);
+  }
+
+  @Get('feed')
+  @UseGuards(AuthGuard)
+  async getFeed(
+    @User('id') currentUserId: number,
+    @Query() query: any,
+  ): Promise<ArticlesResponseInterface> {
+    return await this.articleService.getFeed(currentUserId, query);
   }
 
   @Post()
@@ -81,15 +93,27 @@ export class ArticleController {
 
   @Post(':slug/favorite')
   @UseGuards(AuthGuard)
-  async addArticleToFavorites(@User('id') currentUserId: number, @Param('slug') slug: string) : Promise<ArticleResponseInterface> {
-    const article = await this.articleService.addArticleToFavorites(slug, currentUserId)
-    return this.articleService.buildArticleResponse(article)
+  async addArticleToFavorites(
+    @User('id') currentUserId: number,
+    @Param('slug') slug: string,
+  ): Promise<ArticleResponseInterface> {
+    const article = await this.articleService.addArticleToFavorites(
+      slug,
+      currentUserId,
+    );
+    return this.articleService.buildArticleResponse(article);
   }
 
   @Delete(':slug/favorite')
   @UseGuards(AuthGuard)
-  async removeArticleFromFavorites(@User('id') currentUserId: number, @Param('slug') slug: string) : Promise<ArticleResponseInterface> {
-    const article = await this.articleService.removeArticleFromFavorites(slug, currentUserId)
-    return this.articleService.buildArticleResponse(article)
+  async removeArticleFromFavorites(
+    @User('id') currentUserId: number,
+    @Param('slug') slug: string,
+  ): Promise<ArticleResponseInterface> {
+    const article = await this.articleService.removeArticleFromFavorites(
+      slug,
+      currentUserId,
+    );
+    return this.articleService.buildArticleResponse(article);
   }
 }

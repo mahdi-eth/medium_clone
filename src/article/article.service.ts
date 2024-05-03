@@ -12,6 +12,7 @@ import { UserEntity } from '@/user/user.entity';
 import { ArticleResponseInterface } from './types/articleResponse.Interface';
 import slugify from 'slugify';
 import { ArticlesResponseInterface } from './types/articlesResponse.interface';
+import { FollowEntity } from '@/profile/entities/follow.entity';
 
 @Injectable()
 export class ArticleService {
@@ -20,6 +21,8 @@ export class ArticleService {
     private readonly articleRepository: Repository<ArticleEntity>,
     @InjectRepository(UserEntity)
     private readonly userRepository: Repository<UserEntity>,
+    @InjectRepository(FollowEntity)
+    private readonly followRepository: Repository<FollowEntity>,
     private readonly dataSource: DataSource,
   ) {}
 
@@ -83,6 +86,58 @@ export class ArticleService {
       queryBuilder.andWhere('articles.authorId = :id', {
         id: author.id,
       });
+    }
+
+    let favoriteIds: number[] = [];
+
+    if (id) {
+      const user = await this.userRepository.findOne({
+        where: { id },
+        relations: ['favorites'],
+      });
+
+      favoriteIds = user.favorites.map((el) => el.id);
+    }
+
+    const articles = await queryBuilder.getMany();
+    const articlesWithFavortied = articles.map((article) => {
+      const favorited = favoriteIds.includes(article.id);
+      return {
+        ...article,
+        favorited,
+      };
+    });
+
+    return { articles: articlesWithFavortied, articlesCount };
+  }
+
+  async getFeed(id: number, query: any): Promise<ArticlesResponseInterface> {
+    const follows = await this.followRepository.find({
+      where: { followerId: id },
+    });
+
+    if (follows.length === 0) {
+      return { articles: [], articlesCount: 0 };
+    }
+
+    const followingUserIds = follows.map((follow) => follow.followingId);
+
+    const queryBuilder = this.dataSource
+      .getRepository(ArticleEntity)
+      .createQueryBuilder('articles')
+      .leftJoinAndSelect('articles.author', 'author')
+      .where('articles.author.id IN (:...ids)', { ids: followingUserIds });
+
+    const articlesCount = await queryBuilder.getCount();
+
+    queryBuilder.orderBy('articles.createdAt', 'DESC');
+
+    if (query.limit) {
+      queryBuilder.limit(query.limit);
+    }
+
+    if (query.offset) {
+      queryBuilder.offset(query.offset);
     }
 
     let favoriteIds: number[] = [];
