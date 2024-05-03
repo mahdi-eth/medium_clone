@@ -15,13 +15,14 @@ import { UserResponseInterface } from './types/userResponse.interface';
 import { User } from './decorators/user.decorator';
 import { UserEntity } from './user.entity';
 import { AuthGuard } from './guards/auth.guard';
+import { BackendValidationPipe } from '@/shared/pipes/backendValidation.pipe';
 
 @Controller()
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Post('users')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new BackendValidationPipe())
   async registerUser(
     @Body('user') createUserDto: CreateUserDto,
   ): Promise<UserResponseInterface> {
@@ -30,7 +31,7 @@ export class UserController {
   }
 
   @Post('users/login')
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new BackendValidationPipe())
   async loginUser(
     @Body('user') createUserDto: LoginUserDto,
   ): Promise<UserResponseInterface> {
@@ -48,7 +49,7 @@ export class UserController {
 
   @Put('user')
   @UseGuards(AuthGuard)
-  @UsePipes(new ValidationPipe())
+  @UsePipes(new BackendValidationPipe())
   async updateUser(
     @Body('user') updateUserDto: UpdateUserDto,
     @User() user: UserEntity,
