@@ -21,7 +21,7 @@ export class ProfileController {
     return this.profileService.buildProfileResponse(profile);
   }
 
-  @Delete(':username/unfollow')
+  @Delete(':username/follow')
   @UseGuards(AuthGuard)
   async unfollowProfile(@User('id') userId: number, @Param('username') profileUsername: string): Promise<profileResponseInterface> {
     const profile = await this.profileService.unfollowProfile(userId, profileUsername);
