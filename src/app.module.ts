@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from '@/user/user.module';
 import { AuthMiddleware } from '@/middlewares/auth.middleware';
 import { ArticleModule } from '@/article/article.module';
+import { ProdileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ArticleModule } from '@/article/article.module';
     TagModule,
     UserModule,
     ArticleModule,
+    ProdileModule
   ],
   controllers: [AppController],
   providers: [AppService],
